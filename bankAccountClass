@@ -1,0 +1,108 @@
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class BankAccount {
+
+    private double balance;
+    private String userName;
+    private ArrayList<Double> transactions = new ArrayList<Double>();
+    private double accountNum = Math.random()*10000;
+
+    public BankAccount(){
+        this.balance=0;
+        this.userName="NoName";
+
+    }
+    public BankAccount(double initBalance, String user){
+        this.balance = initBalance;
+        this.userName = user;
+
+    }
+    public void writeFile() throws IOException {
+        FileOutputStream fileOut = new FileOutputStream("bankaccount.txt");
+        PrintWriter fileWrite = new PrintWriter(fileOut);
+        fileWrite.printf("%f %s %.2f" ,this.accountNum,this.userName,this.balance);
+
+    }
+    public void readFile()throws IOException{
+        FileInputStream fileIn  = new FileInputStream("bankaccount.txt");
+        Scanner fileReader = new Scanner(fileIn);
+        this.accountNum= fileReader.nextDouble();
+        this.userName = fileReader.next();
+        this.balance = fileReader.nextDouble();
+        fileIn.close();
+        fileReader.close();
+
+    }
+    public double getAccountNum(){
+        return accountNum;
+
+    }
+    public String getUserName(){
+        return this.userName;
+
+    }
+    public void setUserName(String user){
+        this.userName=user;
+
+    }
+    public double getBalance(){
+        return this.balance;
+
+    }
+    public void setOriginalBalance(double origBal){
+        this.balance = origBal;
+        transactions.add(origBal);
+
+    }
+    public void withdraw(double num){
+            this.balance -= num;
+            if(negBal()){
+                this.balance +=num;
+                System.out.println("Current balance: "+ getBalance());
+            }
+            transactions.add(-num);
+
+
+    }
+    public void deposit(double num){
+        this.balance +=num;
+        transactions.add(num);
+
+    }
+    public boolean negBal(){
+        if(this.balance<0){
+            System.out.println("Sorry balance too low. OverDraft fee applied -$5, please add funds");
+            this.balance -= 5;
+            return true;
+        }
+        else{
+            return false;
+
+        }
+
+
+    }
+    public void getTransactions(){
+        if(transactions.isEmpty()){
+            System.out.println("No Transactions");
+        }
+        else {
+            System.out.println("Oldest-Newest");
+            for (int i = 0; i < transactions.size(); i++) {
+                System.out.print(transactions.get(i) + ", $");
+            }
+            System.out.println();
+        }
+    }
+    public void print(){
+        System.out.printf("\nWelcome back: %s\nCurrent Balance: %.2f\nRecent Transactions: \n",this.userName,this.balance);
+        getTransactions();
+
+    }
+
+}
