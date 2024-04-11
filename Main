@@ -1,0 +1,94 @@
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) throws IOException {
+        boolean nextTrans = true;
+        int choice;
+        String currUser;
+        Scanner scnr = new Scanner(System.in);
+        double currTransaction;
+        BankAccount Account = new BankAccount();
+        boolean firstAccount = true;
+
+
+
+        while (nextTrans == true) {
+            if(firstAccount){
+                Account = new BankAccount();
+                System.out.println("\nWelcome to your new Bank");
+                System.out.print("Enter your First name: ");
+                currUser = scnr.next();
+                Account.setUserName(currUser);
+                System.out.print("Enter your initial balance: $");
+                Account.setOriginalBalance(scnr.nextDouble());
+                System.out.print("Enter the transaction dollar amount: $");
+                currTransaction = scnr.nextDouble();
+                System.out.print("Enter 1 for withdraw, 2 for deposit: ");
+                choice = scnr.nextInt();
+                switch (choice) {
+                    case 1:
+                        if(!Account.negBal()){
+                            Account.withdraw(currTransaction);
+                            break;
+                        }
+                        break;
+                    case 2:
+                        Account.deposit(currTransaction);
+                        break;
+                    default:
+                        break;
+                }
+                firstAccount = false;
+
+            }
+            System.out.print("\n1. Create new Account\n2. Add transaction\n3. Current Balance \n4. Bank Statement\n5. Access other account\n0. To Exit\nEnter a number to continue: ");
+            choice = scnr.nextInt();
+            System.out.println("");
+            switch (choice) {
+                case 0:
+                    System.out.println("Exiting...");
+                    nextTrans = false;
+                    break;
+                case 1:
+                    Account = new BankAccount();
+                    System.out.print("Enter your First name: ");
+                    currUser = scnr.next();
+                    Account.setUserName(currUser);
+                    System.out.print("Enter your initial balance: $");
+                    Account.setOriginalBalance(scnr.nextDouble());
+                case 2:
+                    System.out.print("Enter the transaction dollar amount: $");
+                    currTransaction = scnr.nextDouble();
+                    System.out.print("Enter 1 for withdraw, 2 for deposit: ");
+                    choice = scnr.nextInt();
+                    switch (choice) {
+                        case 1:
+                            if(!Account.negBal()){
+                            Account.withdraw(currTransaction);
+                            break;
+                            }
+                            break;
+                        case 2:
+                            Account.deposit(currTransaction);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 3:
+                    System.out.println(Account.getBalance());
+                    break;
+                case 4:
+                    Account.print();
+                    break;
+                case 5:
+                    Account.readFile();
+                default:
+            }
+        }
+    }
+}
