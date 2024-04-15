@@ -1,0 +1,23 @@
+Account 100:
+- Account holder: Bob
+- Initial balance: $1000.0
+- Transactions:
+  - $1000.00, Deposit, Balance: $1000.00
+  - $-200.00, Withdrawal, Balance: $800.00
+  - $100.00, Deposit, Balance: $900.00
+
+Account 200:
+- Account holder: Jake
+- Initial balance: $3000.0
+- Transactions:
+  - $2000.00, Deposit, Balance: $2000.00
+  - $100.00, Deposit, Balance: $2100.00
+  - $300.00, Deposit, Balance: $2400.00
+
+Account 300:
+- Account holder: Jamal
+- Initial balance: $50000.0
+- Transactions:
+  - $10000.00, Deposit, Balance: $10000.00
+  - $-20000.00, Withdrawal, Balance: $-10000.00
+  - $200.00, Deposit, Balance: $-9800.00
