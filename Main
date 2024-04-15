@@ -4,44 +4,46 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
+    public static int genAccountNum() {
+        double num1 = Math.random() * 100;
+        double num2 = Math.random() * 100;
+        double num3 = num1 * num2 * 10;
+        int num4 = (int) num3;
+        System.out.println(num4);
+        return num4;
 
+    }
+    public static String setFileName(){
+        Scanner getFile = new Scanner(System.in);
+        System.out.print("Enter the name of the file: ");
+        String fileName =getFile.next();
+        return fileName;
+
+    }
     public static void main(String[] args) throws IOException {
         boolean nextTrans = true;
         int choice;
         String currUser;
+        double initBal =0;
         Scanner scnr = new Scanner(System.in);
         double currTransaction;
         BankAccount Account = new BankAccount();
         boolean firstAccount = true;
-
+        String fileName = "";
+        int accountNum=0;
 
 
         while (nextTrans == true) {
             if(firstAccount){
-                Account = new BankAccount();
                 System.out.println("\nWelcome to your new Bank");
+                accountNum =genAccountNum();
+                fileName = setFileName();
                 System.out.print("Enter your First name: ");
                 currUser = scnr.next();
-                Account.setUserName(currUser);
                 System.out.print("Enter your initial balance: $");
-                Account.setOriginalBalance(scnr.nextDouble());
-                System.out.print("Enter the transaction dollar amount: $");
-                currTransaction = scnr.nextDouble();
-                System.out.print("Enter 1 for withdraw, 2 for deposit: ");
-                choice = scnr.nextInt();
-                switch (choice) {
-                    case 1:
-                        if(!Account.negBal()){
-                            Account.withdraw(currTransaction);
-                            break;
-                        }
-                        break;
-                    case 2:
-                        Account.deposit(currTransaction);
-                        break;
-                    default:
-                        break;
-                }
+                initBal = scnr.nextDouble();
+                Account = new BankAccount(currUser,initBal,accountNum, fileName);
+                //Account.writeFile();
                 firstAccount = false;
 
             }
@@ -54,12 +56,12 @@ public class Main {
                     nextTrans = false;
                     break;
                 case 1:
-                    Account = new BankAccount();
+                    accountNum =genAccountNum();
                     System.out.print("Enter your First name: ");
                     currUser = scnr.next();
-                    Account.setUserName(currUser);
                     System.out.print("Enter your initial balance: $");
-                    Account.setOriginalBalance(scnr.nextDouble());
+                    initBal = scnr.nextDouble();
+                    Account =new BankAccount(currUser,initBal,accountNum, fileName);
                 case 2:
                     System.out.print("Enter the transaction dollar amount: $");
                     currTransaction = scnr.nextDouble();
@@ -68,8 +70,8 @@ public class Main {
                     switch (choice) {
                         case 1:
                             if(!Account.negBal()){
-                            Account.withdraw(currTransaction);
-                            break;
+                                Account.withdraw(currTransaction);
+                                break;
                             }
                             break;
                         case 2:
@@ -86,8 +88,12 @@ public class Main {
                     Account.print();
                     break;
                 case 5:
-                    Account.readFile();
+                    System.out.print("Enter the account number: ");
+                    int newAccountNum = scnr.nextInt();
+                    Account.readFile(fileName, newAccountNum);
+                    break;
                 default:
+                    break;
             }
         }
     }
