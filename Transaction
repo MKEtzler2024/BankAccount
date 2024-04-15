@@ -1,0 +1,23 @@
+class Transaction {
+    private double amount;
+    private String type;
+    private double balanceAfterTransaction;
+
+    public Transaction(double amount, String type, double balanceAfterTransaction) {
+        this.amount = amount;
+        this.type = type;
+        this.balanceAfterTransaction = balanceAfterTransaction;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public double getBalanceAfterTransaction() {
+        return balanceAfterTransaction;
+    }
+}
