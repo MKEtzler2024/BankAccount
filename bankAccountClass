@@ -1,43 +1,100 @@
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.NoSuchElementException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class BankAccount {
 
+    private String fileName= "";
     private double balance;
     private String userName;
-    private ArrayList<Double> transactions = new ArrayList<Double>();
-    private double accountNum = Math.random()*10000;
+    private ArrayList<Transaction> transactions = new ArrayList<>();
+    private int accountNum;
 
     public BankAccount(){
-        this.balance=0;
+        this.accountNum=0;
+        this.balance=0.0;
         this.userName="NoName";
 
     }
-    public BankAccount(double initBalance, String user){
+    public BankAccount(String userName, double initBalance, int accountNum, String fileName){
         this.balance = initBalance;
-        this.userName = user;
+        this.userName = userName;
+        this.accountNum =accountNum;
+        this.fileName=fileName;
 
     }
     public void writeFile() throws IOException {
-        FileOutputStream fileOut = new FileOutputStream("bankaccount.txt");
-        PrintWriter fileWrite = new PrintWriter(fileOut);
-        fileWrite.printf("%f %s %.2f" ,this.accountNum,this.userName,this.balance);
-
+        try (FileOutputStream fileOut = new FileOutputStream(fileName);
+             PrintWriter fileWrite = new PrintWriter(fileOut)) {
+            fileWrite.printf("Account %d:\n- Account holder: %s\n- Initial balance: $%.2f\n- Transactions:\n", this.accountNum, this.userName, this.balance);
+            for (Transaction transaction : transactions) {
+                fileWrite.printf(" - $%.2f, %s, Balance: $%.2f\n", transaction.getAmount(), transaction.getType(), transaction.getBalanceAfterTransaction());
+            }
+        }
     }
-    public void readFile()throws IOException{
-        FileInputStream fileIn  = new FileInputStream("bankaccount.txt");
+    public void readFile(String file, int newAccountNum) throws IOException{
+        FileInputStream fileIn = new FileInputStream(file);
         Scanner fileReader = new Scanner(fileIn);
-        this.accountNum= fileReader.nextDouble();
-        this.userName = fileReader.next();
-        this.balance = fileReader.nextDouble();
-        fileIn.close();
-        fileReader.close();
+        boolean accountFound = false;
+        String currLine = fileReader.nextLine();
+        Scanner lineReader = new Scanner(currLine);
+        System.out.println("First line: "+currLine);
+        while (fileReader.hasNextLine()&& !accountFound) {
+            if (currLine.startsWith("Account "+ newAccountNum +":")) {
+                System.out.println("Found Account");
+                this.accountNum = newAccountNum;
+                System.out.println(this.accountNum);
+                accountFound = true;
+                break;  // Exit the loop once the account is found
+                }
+            System.out.println("Failed, curr line = "+ currLine);
+            currLine =fileReader.nextLine();
+            lineReader = new Scanner(currLine);
+        }
+
+        // If account not found, print a message
+        if (!accountFound) {
+            System.out.println("Account not found.");
+            return;
+        }
+        currLine = fileReader.nextLine();
+        lineReader = new Scanner(currLine);
+        this.userName = currLine.substring(currLine.indexOf(": ")+1);
+        System.out.println("user = "+ this.userName);
+        currLine = fileReader.nextLine();
+        lineReader = new Scanner(currLine);
+        currLine = currLine.substring(currLine.indexOf("$")+1);
+        this.balance = Double.parseDouble(currLine);
+        System.out.println("init bal: " + this.balance);
+        currLine =fileReader.nextLine();
+        lineReader = new Scanner(currLine);
+        System.out.println("trans: " + currLine);
+        transactions.clear();
+        while (fileReader.hasNextLine()&& !fileReader.nextLine().isEmpty()){
+            currLine = fileReader.nextLine();
+            lineReader = new Scanner(currLine);
+            double trans=0;
+            String type="";
+            double bal=0;
+            String tempLine= "";
+            tempLine =currLine.substring(currLine.indexOf("$")+1, currLine.indexOf(","));
+            trans = Double.parseDouble(tempLine);
+            type = currLine.substring(currLine.indexOf(", ")+1);
+            tempLine = currLine.substring(currLine.indexOf(": $")+3);
+            System.out.println(tempLine);
+            bal = Double.parseDouble(tempLine);
+            transactions.add(new Transaction(trans, type, bal));
+        }
+
+        print();
+
 
     }
+
     public double getAccountNum(){
         return accountNum;
 
@@ -54,25 +111,17 @@ public class BankAccount {
         return this.balance;
 
     }
-    public void setOriginalBalance(double origBal){
-        this.balance = origBal;
-        transactions.add(origBal);
-
+    public void withdraw(double amount) {
+        this.balance -= amount;
+        if (negBal()) {
+            this.balance += amount;
+            System.out.println("Current balance: " + getBalance());
+        }
+        transactions.add(new Transaction(-amount, "Withdrawal", balance));
     }
-    public void withdraw(double num){
-            this.balance -= num;
-            if(negBal()){
-                this.balance +=num;
-                System.out.println("Current balance: "+ getBalance());
-            }
-            transactions.add(-num);
-
-
-    }
-    public void deposit(double num){
-        this.balance +=num;
-        transactions.add(num);
-
+    public void deposit(double amount) {
+        this.balance += amount;
+        transactions.add(new Transaction(amount, "Deposit", balance));
     }
     public boolean negBal(){
         if(this.balance<0){
@@ -99,10 +148,12 @@ public class BankAccount {
             System.out.println();
         }
     }
-    public void print(){
-        System.out.printf("\nWelcome back: %s\nCurrent Balance: %.2f\nRecent Transactions: \n",this.userName,this.balance);
-        getTransactions();
-
+    public void print() {
+        System.out.printf("Welcome back: %s%nCurrent Balance: %.2f%nRecent Transactions: %n", this.userName, this.balance);
+        for (Transaction transaction : transactions) {
+            System.out.printf("Amount: %.2f, Type: %s, Balance After Transaction: %.2f%n",
+                    transaction.getAmount(), transaction.getType(), transaction.getBalanceAfterTransaction());
+        }
     }
 
 }
