@@ -27,76 +27,13 @@ public class BankAccount {
         this.fileName=fileName;
 
     }
-    public void writeFile() throws IOException {
-        try (FileOutputStream fileOut = new FileOutputStream(fileName);
-             PrintWriter fileWrite = new PrintWriter(fileOut)) {
-            fileWrite.printf("Account %d:\n- Account holder: %s\n- Initial balance: $%.2f\n- Transactions:\n", this.accountNum, this.userName, this.balance);
-            for (Transaction transaction : transactions) {
-                fileWrite.printf(" - $%.2f, %s, Balance: $%.2f\n", transaction.getAmount(), transaction.getType(), transaction.getBalanceAfterTransaction());
-            }
-        }
-    }
-    public void readFile(String file, int newAccountNum) throws IOException{
-        FileInputStream fileIn = new FileInputStream(file);
-        Scanner fileReader = new Scanner(fileIn);
-        boolean accountFound = false;
-        String currLine = fileReader.nextLine();
-        Scanner lineReader = new Scanner(currLine);
-        System.out.println("First line: "+currLine);
-        while (fileReader.hasNextLine()&& !accountFound) {
-            if (currLine.startsWith("Account "+ newAccountNum +":")) {
-                System.out.println("Found Account");
-                this.accountNum = newAccountNum;
-                System.out.println(this.accountNum);
-                accountFound = true;
-                break;  // Exit the loop once the account is found
-                }
-            System.out.println("Failed, curr line = "+ currLine);
-            currLine =fileReader.nextLine();
-            lineReader = new Scanner(currLine);
-        }
 
-        // If account not found, print a message
-        if (!accountFound) {
-            System.out.println("Account not found.");
-            return;
-        }
-        currLine = fileReader.nextLine();
-        lineReader = new Scanner(currLine);
-        this.userName = currLine.substring(currLine.indexOf(": ")+1);
-        System.out.println("user = "+ this.userName);
-        currLine = fileReader.nextLine();
-        lineReader = new Scanner(currLine);
-        currLine = currLine.substring(currLine.indexOf("$")+1);
-        this.balance = Double.parseDouble(currLine);
-        System.out.println("init bal: " + this.balance);
-        currLine =fileReader.nextLine();
-        lineReader = new Scanner(currLine);
-        System.out.println("trans: " + currLine);
-        transactions.clear();
-        while (fileReader.hasNextLine()&& !fileReader.nextLine().isEmpty()){
-            currLine = fileReader.nextLine();
-            lineReader = new Scanner(currLine);
-            double trans=0;
-            String type="";
-            double bal=0;
-            String tempLine= "";
-            tempLine =currLine.substring(currLine.indexOf("$")+1, currLine.indexOf(","));
-            trans = Double.parseDouble(tempLine);
-            type = currLine.substring(currLine.indexOf(", ")+1);
-            tempLine = currLine.substring(currLine.indexOf(": $")+3);
-            System.out.println(tempLine);
-            bal = Double.parseDouble(tempLine);
-            transactions.add(new Transaction(trans, type, bal));
-        }
-
-        print();
-
-
-    }
-
-    public double getAccountNum(){
+    public int getAccountNum(){
         return accountNum;
+
+    }
+    public ArrayList<Transaction> getTransList(){
+        return transactions;
 
     }
     public String getUserName(){
@@ -111,15 +48,16 @@ public class BankAccount {
         return this.balance;
 
     }
-    public void withdraw(double amount) {
+    public void withdraw(double amount){
         this.balance -= amount;
         if (negBal()) {
             this.balance += amount;
             System.out.println("Current balance: " + getBalance());
         }
         transactions.add(new Transaction(-amount, "Withdrawal", balance));
+
     }
-    public void deposit(double amount) {
+    public void deposit(double amount){
         this.balance += amount;
         transactions.add(new Transaction(amount, "Deposit", balance));
     }
