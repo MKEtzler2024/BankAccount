@@ -1,9 +1,106 @@
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
+    public static String fileName ="";
+    public static int accountNum=0;
+    public static String currUser;
+    public static double balance;
+    public static BankAccount Account;
+    public static void writeFile() throws IOException {
+        try (FileOutputStream fileOut = new FileOutputStream(fileName,true);
+             PrintWriter fileWrite = new PrintWriter(fileOut)) {
+            fileWrite.printf("\nAccount %d:\n- Account holder: %s\n- Initial balance: $%.2f\n- Transactions:\n", Account.getAccountNum(), Account.getUserName(), Account.getBalance());
+            for (Transaction transaction : Account.getTransList()) {
+                writeTrans(transaction);
+            }
+            fileWrite.close();
+            fileOut.close();
+        }
+
+    }
+    public static void writeTrans(Transaction currTrans) throws IOException {
+        try (FileOutputStream fileOut = new FileOutputStream(fileName,true);
+             PrintWriter fileWrite = new PrintWriter(fileOut)) {
+            fileWrite.printf(" - $%.2f, %s, Balance: $%.2f\n", currTrans.getAmount(), currTrans.getType(), currTrans.getBalanceAfterTransaction());
+            fileWrite.close();
+            fileOut.close();
+        }
+
+    }
+    public static void readFile(String file, int newAccountNum) throws IOException{
+        FileInputStream fileIn = new FileInputStream(file);
+        Scanner fileReader = new Scanner(fileIn);
+        boolean accountFound = false;
+        String currLine = fileReader.nextLine();
+        Scanner lineReader = new Scanner(currLine);
+        //System.out.println("First line: "+currLine);
+        while (fileReader.hasNextLine()&& !accountFound) {
+            if (currLine.startsWith("Account "+ newAccountNum +":")) {
+                System.out.println("Found Account");
+                accountNum = newAccountNum;
+                //System.out.println(this.accountNum);
+                accountFound = true;
+                break;  // Exit the loop once the account is found
+            }
+            //System.out.println("Failed, curr line = "+ currLine);
+            currLine =fileReader.nextLine();
+            lineReader = new Scanner(currLine);
+        }
+
+        // If account not found, print a message
+        if (!accountFound) {
+            System.out.println("Account not found.");
+            return;
+        }
+        currLine = fileReader.nextLine();
+        lineReader = new Scanner(currLine);
+        currUser = currLine.substring(currLine.indexOf(": ")+1);
+        //System.out.println("user = "+ this.userName);
+        currLine = fileReader.nextLine();
+        lineReader = new Scanner(currLine);
+        currLine = currLine.substring(currLine.indexOf("$")+1);
+        double currBalance = Double.parseDouble(currLine);
+        //System.out.println("init bal: " + this.balance);
+        currLine =fileReader.nextLine();
+        lineReader = new Scanner(currLine);
+        //System.out.println("trans: " + currLine);
+        currLine = fileReader.nextLine();
+        Account.getTransList().clear();
+        while (fileReader.hasNextLine()){
+            if(currLine.isEmpty()){
+                break;
+            }
+            else{
+                //System.out.println(currLine);
+                lineReader = new Scanner(currLine);
+                double trans=0;
+                String type="";
+                double bal=0;
+                String tempLine= "";
+                tempLine =currLine.substring(currLine.indexOf("$")+1, currLine.indexOf(","));
+                trans = Double.parseDouble(tempLine);
+                type = currLine.substring(currLine.indexOf(", ")+2, currLine.lastIndexOf(","));
+                String balLine = currLine.substring(currLine.indexOf(": $")+3);
+                bal = Double.parseDouble(balLine);
+                //System.out.println(trans);
+                //System.out.println(type);
+                //System.out.println(bal);
+                Account.getTransList().add(new Transaction(trans, type, bal));
+                currLine = fileReader.nextLine();
+                //System.out.println("End Loop");
+            }
+
+        }
+
+        Account.print();
+
+
+    }
     public static int genAccountNum() {
         double num1 = Math.random() * 100;
         double num2 = Math.random() * 100;
@@ -23,14 +120,12 @@ public class Main {
     public static void main(String[] args) throws IOException {
         boolean nextTrans = true;
         int choice;
-        String currUser;
         double initBal =0;
         Scanner scnr = new Scanner(System.in);
         double currTransaction;
-        BankAccount Account = new BankAccount();
+        Account = new BankAccount();
         boolean firstAccount = true;
-        String fileName = "";
-        int accountNum=0;
+        fileName = "";
 
 
         while (nextTrans == true) {
@@ -43,7 +138,7 @@ public class Main {
                 System.out.print("Enter your initial balance: $");
                 initBal = scnr.nextDouble();
                 Account = new BankAccount(currUser,initBal,accountNum, fileName);
-                //Account.writeFile();
+                writeFile();
                 firstAccount = false;
 
             }
@@ -61,6 +156,7 @@ public class Main {
                     currUser = scnr.next();
                     System.out.print("Enter your initial balance: $");
                     initBal = scnr.nextDouble();
+                    balance = initBal;
                     Account =new BankAccount(currUser,initBal,accountNum, fileName);
                 case 2:
                     System.out.print("Enter the transaction dollar amount: $");
@@ -71,11 +167,13 @@ public class Main {
                         case 1:
                             if(!Account.negBal()){
                                 Account.withdraw(currTransaction);
+                                balance -=currTransaction;
                                 break;
                             }
                             break;
                         case 2:
                             Account.deposit(currTransaction);
+                            balance +=currTransaction;
                             break;
                         default:
                             break;
@@ -88,9 +186,10 @@ public class Main {
                     Account.print();
                     break;
                 case 5:
+                    writeFile();
                     System.out.print("Enter the account number: ");
                     int newAccountNum = scnr.nextInt();
-                    Account.readFile(fileName, newAccountNum);
+                    readFile(fileName, newAccountNum);
                     break;
                 default:
                     break;
