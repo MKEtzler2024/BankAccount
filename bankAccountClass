@@ -8,24 +8,47 @@ import java.util.Scanner;
 
 public class BankAccount {
 
-    private String fileName= "";
     private double balance;
+    private double initBal;
     private String userName;
     private ArrayList<Transaction> transactions = new ArrayList<>();
     private int accountNum;
+    public Scanner userScanner = new Scanner(System.in);
 
     public BankAccount(){
         this.accountNum=0;
         this.balance=0.0;
         this.userName="NoName";
+        System.out.println("Enter user name: ");
+        this.userName = userScanner.next();
+        System.out.println("Enter inital balance: ");
+        this.initBal = userScanner.nextDouble();
+        this.balance = initBal;
+        this.accountNum = genAccountNum();
 
     }
-    public BankAccount(String userName, double initBalance, int accountNum, String fileName){
+    public BankAccount(String userName, double initBalance, int accountNum){
         this.balance = initBalance;
+        this.initBal=initBalance;
         this.userName = userName;
         this.accountNum =accountNum;
-        this.fileName=fileName;
 
+    }
+    public static int genAccountNum() {
+        double num1 = Math.random() * 100;
+        double num2 = Math.random() * 100;
+        double num3 = num1 * num2 * 10;
+        int num4 = (int) num3;
+        System.out.println(num4);
+        return num4;
+
+    }
+    public void setInitBal(double init){
+        this.initBal = init;
+
+    }
+    public double getInitBal(){
+        return initBal;
     }
 
     public int getAccountNum(){
@@ -46,6 +69,10 @@ public class BankAccount {
     }
     public double getBalance(){
         return this.balance;
+
+    }
+    public void setBalance(double bal){
+        this.balance =bal;
 
     }
     public void withdraw(double amount){
@@ -92,6 +119,16 @@ public class BankAccount {
             System.out.printf("Amount: %.2f, Type: %s, Balance After Transaction: %.2f%n",
                     transaction.getAmount(), transaction.getType(), transaction.getBalanceAfterTransaction());
         }
+    }
+    public void changeAccount(int accNum,String userName ,double initBal,double bal, ArrayList<Transaction> trans){
+        this.accountNum = accNum;
+        this.userName = userName;
+        this.initBal = initBal;
+        this.balance = bal;
+        this.transactions.clear();
+        this.transactions =trans;
+
+
     }
 
 }
