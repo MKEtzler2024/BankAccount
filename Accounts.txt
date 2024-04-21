@@ -31,4 +31,11 @@ Account 83245:
  - $-250.00, Withdrawal, Balance: $5250.00
  - $600.00, Deposit, Balance: $5850.00
 
+Account 10254:
+- Account holder: jamal
+- Current balance: $10200.00
+- Transactions:
+ - $-300.00, Withdrawal, Balance: $19700.00
+ - $500.00, Deposit, Balance: $20200.00
+ - $-10000.00, Withdrawal, Balance: $10200.00
 
