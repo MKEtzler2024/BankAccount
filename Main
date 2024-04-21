@@ -13,96 +13,94 @@ public class Main {
     public static double newInitBal;
     public static BankAccount Account;
     public static ArrayList<Transaction> newTransList = new ArrayList<>();
-    public static void writeFile() throws IOException {
+
+
+    public static void changeAccount(int newAccountNum) throws IOException{
         FileInputStream fileIn = new FileInputStream(fileName);
         Scanner fileReader = new Scanner(fileIn);
-        boolean accountFound = false;
-        String currLine ="";
-        Scanner lineReader = new Scanner(currLine);
+        String currLine = fileReader.nextLine();
+        int accI =findAccount(newAccountNum);
+        for(int i=1 ;i<accI;i++ ){
+            currLine =fileReader.nextLine();
+
+        }
+        currLine =fileReader.nextLine();
+        currLine=scanAccount(currLine, fileReader);
+        scanTransactions(currLine,fileReader);
+        Account.changeAccount(newAccNum,newUser,newInitBal,newBal,newTransList);
+        Account.print();
+
+    }
+    public static void writeAccount()throws IOException{
         try (FileOutputStream fileOut = new FileOutputStream(fileName,true);
-             PrintWriter fileWrite = new PrintWriter(fileOut)) {
-            while (fileReader.hasNextLine()&& !accountFound) {
-                if (currLine.startsWith("Account "+ Account.getAccountNum() +":")) {
-                    System.out.println("Found Account");
-                    accountFound = true;
-                    break;  // Exit the loop once the account is found
-                }
-                currLine =fileReader.nextLine();
-                lineReader = new Scanner(currLine);
-            }
-            if(!accountFound){
+             PrintWriter fileWrite = new PrintWriter(fileOut)){
                 fileWrite.printf("\nAccount %d:\n- Account holder: %s\n- Current balance: $%.2f\n- Transactions:\n", Account.getAccountNum(), Account.getUserName(), Account.getBalance());
                 for (Transaction currTrans : Account.getTransList()) {
                     fileWrite.printf(" - $%.2f, %s, Balance: $%.2f\n", currTrans.getAmount(), currTrans.getType(), currTrans.getBalanceAfterTransaction());
                 }
                 fileWrite.close();
                 fileOut.close();
-            }
-            if(accountFound){
-                // print all new transactions not already printed to stored acc info on .txt
 
             }
+
+    }
+    public static void writeTrans()throws IOException{
+        try (FileOutputStream fileOut = new FileOutputStream(fileName,true);
+        PrintWriter fileWrite = new PrintWriter(fileOut)){
+            for (Transaction currTrans : Account.getTransList()) {
+                fileWrite.printf(" - $%.2f, %s, Balance: $%.2f\n", currTrans.getAmount(), currTrans.getType(), currTrans.getBalanceAfterTransaction());
+            }
+            fileWrite.close();
+            fileOut.close();
 
         }
 
     }
-    public static void readFile(int newAccountNum) throws IOException{
+    public static String scanAccount(String currLine, Scanner fileReader)throws IOException{
+        currLine = fileReader.nextLine();
+        newUser = currLine.substring(currLine.indexOf(": ")+1);
+        currLine = fileReader.nextLine();
+        currLine = currLine.substring(currLine.indexOf("$")+1);
+        newBal = Double.parseDouble(currLine);
+        currLine =fileReader.nextLine();
+        currLine = fileReader.nextLine();
+        return currLine;
+
+    }
+    public static void scanTransactions(String currLine,Scanner fileReader)throws IOException{
+        while (fileReader.hasNextLine()&&!(currLine.isEmpty())) {
+                String tempLine = currLine.substring(currLine.indexOf("$") + 1, currLine.indexOf(","));
+                double trans = Double.parseDouble(tempLine);
+                String type = currLine.substring(currLine.indexOf(", ") + 2, currLine.lastIndexOf(","));
+                String balLine = currLine.substring(currLine.indexOf(": $") + 3);
+                double bal = Double.parseDouble(balLine);
+                newTransList.add(new Transaction(trans, type, bal));
+                currLine = fileReader.nextLine();
+        }
+    }
+    public static int findAccount(int newAccountNum) throws IOException{
         FileInputStream fileIn = new FileInputStream(fileName);
         Scanner fileReader = new Scanner(fileIn);
         boolean accountFound = false;
         String currLine = fileReader.nextLine();
         Scanner lineReader = new Scanner(currLine);
+        int i =0;
         while (fileReader.hasNextLine()&& !accountFound) {
             if (currLine.startsWith("Account "+ newAccountNum +":")) {
-                System.out.println("Found Account");
+                System.out.println("Found Account\n");
                 newAccNum = newAccountNum;
                 accountFound = true;
-                break;  // Exit the loop once the account is found
+                return i;
             }
             currLine =fileReader.nextLine();
             lineReader = new Scanner(currLine);
+            i++;
         }
         // If account not found, print a message
         if (!accountFound) {
             System.out.println("Account not found.");
-            return;
         }
-        currLine = fileReader.nextLine();
-        lineReader = new Scanner(currLine);
-        newUser = currLine.substring(currLine.indexOf(": ")+1);
-        currLine = fileReader.nextLine();
-        lineReader = new Scanner(currLine);
-        currLine = currLine.substring(currLine.indexOf("$")+1);
-         newInitBal = Double.parseDouble(currLine);
-        currLine =fileReader.nextLine();
-        lineReader = new Scanner(currLine);
-        currLine = fileReader.nextLine();
-        while (fileReader.hasNextLine()){
-            if(currLine.isEmpty()){
-                break;
-            }
-            else{
-                lineReader = new Scanner(currLine);
-                double trans=0;
-                String type="";
-                double bal=0;
-                String tempLine= "";
-                tempLine =currLine.substring(currLine.indexOf("$")+1, currLine.indexOf(","));
-                trans = Double.parseDouble(tempLine);
-                type = currLine.substring(currLine.indexOf(", ")+2, currLine.lastIndexOf(","));
-                String balLine = currLine.substring(currLine.indexOf(": $")+3);
-                bal = Double.parseDouble(balLine);
-                newTransList.add(new Transaction(trans, type, bal));
-                currLine = fileReader.nextLine();
-                newBal = bal;
-            }
-
-        }
-        Account.changeAccount(newAccNum,newUser,newInitBal,newBal,newTransList);
-
-        Account.print();
-
-
+        return i;
     }
     public static int genAccountNum() {
         double num1 = Math.random() * 100;
@@ -139,10 +137,10 @@ public class Main {
                 case 0:
                     System.out.println("Exiting...");
                     nextTrans = false;
-                    writeFile();
+                    writeAccount();
                     break;
                 case 1:
-                    writeFile();
+                    writeAccount();
                     Account = new BankAccount();
                 case 2:
                     System.out.print("Enter the transaction dollar amount: $");
@@ -170,10 +168,10 @@ public class Main {
                     Account.print();
                     break;
                 case 5:
-                    writeFile();
+                    writeAccount();
                     System.out.print("Enter the account number: ");
                     int newAccountNum = scnr.nextInt();
-                    readFile(newAccountNum);
+                    changeAccount(newAccountNum);
                     break;
                 default:
                     break;
