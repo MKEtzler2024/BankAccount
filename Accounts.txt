@@ -1,23 +1,34 @@
-Account 100:
-- Account holder: Bob
-- Initial balance: $1000.0
-- Transactions:
-  - $1000.00, Deposit, Balance: $1000.00
-  - $-200.00, Withdrawal, Balance: $800.00
-  - $100.00, Deposit, Balance: $900.00
 
-Account 200:
-- Account holder: Jake
-- Initial balance: $3000.0
+Account 15712:
+- Account holder: barney
+- Current balance: $2150.00
 - Transactions:
-  - $2000.00, Deposit, Balance: $2000.00
-  - $100.00, Deposit, Balance: $2100.00
-  - $300.00, Deposit, Balance: $2400.00
+ - $-200.00, Withdrawal, Balance: $1800.00
+ - $500.00, Deposit, Balance: $2300.00
+ - $-150.00, Withdrawal, Balance: $2150.00
 
-Account 300:
-- Account holder: Jamal
-- Initial balance: $50000.0
+Account 24773:
+- Account holder: joe
+- Current balance: $42100.00
 - Transactions:
-  - $10000.00, Deposit, Balance: $10000.00
-  - $-20000.00, Withdrawal, Balance: $-10000.00
-  - $200.00, Deposit, Balance: $-9800.00
+ - $-7500.00, Withdrawal, Balance: $42500.00
+ - $500.00, Deposit, Balance: $43000.00
+ - $-900.00, Withdrawal, Balance: $42100.00
+
+Account 63565:
+- Account holder: jack
+- Current balance: $670.00
+- Transactions:
+ - $-200.00, Withdrawal, Balance: $320.00
+ - $-200.00, Withdrawal, Balance: $120.00
+ - $550.00, Deposit, Balance: $670.00
+
+Account 83245:
+- Account holder: smith
+- Current balance: $5850.00
+- Transactions:
+ - $500.00, Deposit, Balance: $5500.00
+ - $-250.00, Withdrawal, Balance: $5250.00
+ - $600.00, Deposit, Balance: $5850.00
+
+
