@@ -102,15 +102,7 @@ public class Main {
         }
         return i;
     }
-    public static int genAccountNum() {
-        double num1 = Math.random() * 100;
-        double num2 = Math.random() * 100;
-        double num3 = num1 * num2 * 10;
-        int num4 = (int) num3;
-        System.out.println(num4);
-        return num4;
 
-    }
     public static void main(String[] args) throws IOException {
         boolean nextTrans = true;
         int choice;
